@@ -154,8 +154,14 @@ public class MarkerManager extends ViewGroupManager<MapMarker> implements RNMaps
 
     @Override
     public void onDropViewInstance(MapMarker view) {
-        super.onDropViewInstance(view);
-        view.doDestroy();
+        try {
+            super.onDropViewInstance(view);
+            if (view != null) {
+                view.doDestroy();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -279,24 +285,28 @@ public class MarkerManager extends ViewGroupManager<MapMarker> implements RNMaps
     public void addView(MapMarker parent, View child, int index) {
         // if an <Callout /> component is a child, then it is a callout view, NOT part of the
         // marker.
-        if (child instanceof MapCallout) {
-            parent.setCalloutView((MapCallout) child);
-        } else {
-            super.addView(parent, child, index);
-            if (index == 0) {
-                child.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        int newWidth = right - left;
-                        int newHeight = bottom - top;
-                        MapMarker marker = (MapMarker) v.getParent();
-                        if(marker != null){
-                            marker.update(newWidth, newHeight);
+        try{
+            if (child instanceof MapCallout) {
+                parent.setCalloutView((MapCallout) child);
+            } else {
+                super.addView(parent, child, index);
+                if (index == 0) {
+                    child.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                        @Override
+                        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                            int newWidth = right - left;
+                            int newHeight = bottom - top;
+                            MapMarker marker = (MapMarker) v.getParent();
+                            if(marker != null){
+                                marker.update(newWidth, newHeight);
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                parent.update(true);
             }
-            parent.update(true);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -278,11 +278,15 @@ public class MapMarkerManager extends ViewGroupManager<MapMarker> {
     public void addView(MapMarker parent, View child, int index) {
         // if an <Callout /> component is a child, then it is a callout view, NOT part of the
         // marker.
-        if (child instanceof MapCallout) {
-            parent.setCalloutView((MapCallout) child);
-        } else {
-            super.addView(parent, child, index);
-            parent.update(true);
+        try{
+            if (child instanceof MapCallout) {
+                parent.setCalloutView((MapCallout) child);
+            } else {
+                super.addView(parent, child, index);
+                parent.update(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -317,21 +317,25 @@ public class MapViewManager extends ViewGroupManager<MapView> implements RNMapsM
 
     @Override
     public void addView(MapView parent, View child, int index) {
-        parent.addFeature(child, index);
-        if (child instanceof MapMarker && ((MapMarker) child).isLoadingImage()){
-            MapMarker markerView = (MapMarker) child;
-            // Marker is already added as invisible, restore visibility when image loads
-            markerView.setImageLoadedListener((uri, drawable, b) -> {
-                com.google.android.gms.maps.model.Marker googleMarker =
-                    (com.google.android.gms.maps.model.Marker) markerView.getFeature();
-                if (googleMarker != null) {
-                    // Restore original visibility (marker was hidden temporarily during image load)
-                    if (View.VISIBLE == markerView.getVisibility()) {
-                        googleMarker.setVisible(true);
+        try{
+            parent.addFeature(child, index);
+            if (child instanceof MapMarker && ((MapMarker) child).isLoadingImage()){
+                MapMarker markerView = (MapMarker) child;
+                // Marker is already added as invisible, restore visibility when image loads
+                markerView.setImageLoadedListener((uri, drawable, b) -> {
+                    com.google.android.gms.maps.model.Marker googleMarker =
+                        (com.google.android.gms.maps.model.Marker) markerView.getFeature();
+                    if (googleMarker != null) {
+                        // Restore original visibility (marker was hidden temporarily during image load)
+                        if (View.VISIBLE == markerView.getVisibility()) {
+                            googleMarker.setVisible(true);
+                        }
                     }
-                }
-                markerView.update(true);
-            });
+                    markerView.update(true);
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -636,7 +640,13 @@ public class MapViewManager extends ViewGroupManager<MapView> implements RNMapsM
 
     @Override
     public void onDropViewInstance(MapView view) {
-        view.doDestroy();
-        super.onDropViewInstance(view);
+       try {
+           if (view != null) {
+               view.doDestroy();
+           }
+           super.onDropViewInstance(view);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
     }
 }

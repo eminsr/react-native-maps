@@ -84,6 +84,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.Objects;
 
 import com.rnmaps.fabric.event.*;
 
@@ -215,12 +216,20 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
     public void onResume(LifecycleOwner owner) {
         if (hasPermissions() && map != null) {
             //noinspection MissingPermission
-            map.setMyLocationEnabled(showUserLocation);
-            map.setLocationSource(fusedLocationSource);
+            try {
+                map.setMyLocationEnabled(showUserLocation);
+                map.setLocationSource(fusedLocationSource);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         synchronized (MapView.this) {
             if (!destroyed) {
-                MapView.this.onResume();
+                try {
+                    MapView.this.onResume();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             paused = false;
         }
@@ -231,12 +240,24 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
     public void onPause(LifecycleOwner owner) {
         if (hasPermissions() && map != null) {
             //noinspection MissingPermission
-            map.setMyLocationEnabled(false);
+            try {
+                map.setMyLocationEnabled(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         synchronized (MapView.this) {
             if (!paused) {
-                super.onPause();
-                MapView.this.onPause();
+                try {
+                    super.onPause();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    MapView.this.onPause();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 paused = true;
             }
         }
@@ -249,7 +270,11 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
 
     @Override
     public void onDestroy(LifecycleOwner owner) {
-        MapView.this.doDestroy();
+        try {
+            MapView.this.doDestroy();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public MapView(ThemedReactContext context,
@@ -375,10 +400,12 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
         savedFeatures = new ArrayList<>(features);
         features.clear();
         shouldRestorePadding = true;
-        removeView(attacherGroup);
-        attacherGroup = null;
-        super.onDetachedFromWindow();
-        detachLifecycleObserver();
+        if (attacherGroup != null) {
+            try { removeView(attacherGroup); } catch (Throwable e) {e.printStackTrace();}
+            attacherGroup = null;
+        }
+        try { super.onDetachedFromWindow(); } catch (Throwable e) {e.printStackTrace();}
+        try { detachLifecycleObserver(); } catch (Throwable e) {e.printStackTrace();}
     }
 
     // Method to attach lifecycle observer
@@ -552,29 +579,36 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
         markerCollection.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-                MapMarker airMapMarker = getMarkerMap(marker);
+                try {
+                    MapMarker airMapMarker = getMarkerMap(marker);
 
-                WritableMap eventData = makeClickEventData(marker.getPosition());
-                eventData.putString("action", "marker-press");
-                eventData.putString("id", airMapMarker.getIdentifier());
-                airMapMarker.dispatchEvent(eventData, OnPressEvent::new);
+                    String markerIdentifier = airMapMarker.getIdentifier();
 
-                WritableMap mapEventData = makeClickEventData(marker.getPosition());
-                mapEventData.putString("action", "marker-press");
-                mapEventData.putString("id", airMapMarker.getIdentifier());
+                    WritableMap eventData = makeClickEventData(marker.getPosition());
+                    eventData.putString("action", "marker-press");
+                    eventData.putString("id", markerIdentifier);
+                    airMapMarker.dispatchEvent(eventData, OnPressEvent::new);
 
-                dispatchEvent(mapEventData, OnMarkerPressEvent::new);
+                    WritableMap mapEventData = makeClickEventData(marker.getPosition());
+                    mapEventData.putString("action", "marker-press");
+                    mapEventData.putString("id", markerIdentifier);
+
+                    dispatchEvent(mapEventData, OnMarkerPressEvent::new);
 
 
-                handleMarkerSelection(airMapMarker);
+                    handleMarkerSelection(airMapMarker);
 
-                // Return false to open the callout info window and center on the marker
-                // https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap
-                // .OnMarkerClickListener
-                if (view.moveOnMarkerPress) {
-                    return false;
-                } else {
-                    marker.showInfoWindow();
+                    // Return false to open the callout info window and center on the marker
+                    // https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap
+                    // .OnMarkerClickListener
+                    if (view.moveOnMarkerPress) {
+                        return false;
+                    } else {
+                        marker.showInfoWindow();
+                        return true;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                     return true;
                 }
             }
@@ -785,10 +819,18 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
                 onPause();
                 paused = true;
             }
-            onDestroy();
-            detachLifecycleObserver();
         } catch (Exception exception){
             Log.e("MapView", "exception with destroying", exception);
+        }
+        try {
+            onDestroy();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            detachLifecycleObserver();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -1920,7 +1962,7 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
 
         for (Map.Entry<Marker, MapMarker> entryMarker : markerMap.entrySet()) {
             if (entryMarker.getKey().getPosition().equals(marker.getPosition())
-                    && entryMarker.getKey().getTitle().equals(marker.getTitle())) {
+                    && Objects.equals(entryMarker.getKey().getTitle(), marker.getTitle())) {
                 airMarker = entryMarker.getValue();
                 break;
             }

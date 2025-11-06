@@ -215,14 +215,18 @@ public class MapMarker extends MapFeature {
     }
 
     public void doDestroy() {
-        MarkerManager.Collection collection = markerCollectionRef != null
-                ? markerCollectionRef.get()
-                : null;
+        try {
+            MarkerManager.Collection collection = markerCollectionRef != null
+                    ? markerCollectionRef.get()
+                    : null;
 
-        if (collection != null) {
-            this.removeFromMap(collection);
+            if (collection != null) {
+                this.removeFromMap(collection);
+            }
+            markerCollectionRef = null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        markerCollectionRef = null;
     }
     public String getIdentifier() {
         return this.identifier;
@@ -464,14 +468,18 @@ public class MapMarker extends MapFeature {
 
     @Override
     public void addView(View child, int index) {
-        super.addView(child, index);
-        // if children are added, it means we are rendering a custom marker
-        if (!(child instanceof MapCallout)) {
-            hasCustomMarkerView = true;
-            updateTracksViewChanges();
-            hackToHandleDraweeLifecycle(child);
+        try{
+            super.addView(child, index);
+            // if children are added, it means we are rendering a custom marker
+            if (!(child instanceof MapCallout)) {
+                hasCustomMarkerView = true;
+                updateTracksViewChanges();
+                hackToHandleDraweeLifecycle(child);
+            }
+            update(true);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        update(true);
     }
     private void hackToHandleDraweeLifecycle(View child){
         if (child instanceof DraweeView<?>) {
@@ -571,10 +579,14 @@ public class MapMarker extends MapFeature {
         if (marker == null) {
             return;
         }
-        MarkerManager.Collection markerCollection = (MarkerManager.Collection) collection;
-        markerCollection.remove(marker);
-        marker = null;
-        updateTracksViewChanges();
+        try{
+            MarkerManager.Collection markerCollection = (MarkerManager.Collection) collection;
+            markerCollection.remove(marker);
+            marker = null;
+            updateTracksViewChanges();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private BitmapDescriptor getIcon() {
