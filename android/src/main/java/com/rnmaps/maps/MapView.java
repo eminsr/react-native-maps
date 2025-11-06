@@ -582,6 +582,13 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
                 try {
                     MapMarker airMapMarker = getMarkerMap(marker);
 
+                    if(airMapMarker == null){
+                        if(marker != null){
+                            marker.remove();
+                        }
+                        return true;
+                    }
+
                     String markerIdentifier = airMapMarker.getIdentifier();
 
                     WritableMap eventData = makeClickEventData(marker.getPosition());
