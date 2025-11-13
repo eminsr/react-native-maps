@@ -21,17 +21,21 @@ See [Setup Instructions for the Included Example Project](docs/examples-setup.md
 - **Fabric is now supported**:  
   Fabric is now supported for the latest version of the library, **latest version is strongly recommended** because many regressions appeared after the release of v1.22.0 if you don't have Fabric (New Arch) enabled, please use v1.21.0 or earlier
 
-### Version Requirements:
+## Compatibility
 
-#### Fabric Only
+### Fabric (New Architecture)
 
-- **Version `1.22.0` and below**: Requires **React Native `>= 0.76`**.
+| Version          | React Native Requirement |
+| ---------------- | ------------------------ |
+| 1.26.1+          | >= 0.81.1                |
+| 1.25.7 and below | >= 0.76                  |
 
-#### Old Arch
+### Old Architecture
 
-- **Version `1.21.1` and below**: Requires **React Native `>= 0.74`**.
-- **Version `1.14.0` and above**: Requires **React Native `>= 0.74`**.
-- **Versions below `1.14.0`**: Require **React Native `>= 0.64.3`**.
+| Version         | React Native Requirement |
+| --------------- | ------------------------ |
+| 1.14.0 - 1.20.1 | >= 0.74                  |
+| < 1.14.0        | >= 0.64.3                |
 
 ## Component API
 

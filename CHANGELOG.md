@@ -1,7 +1,14 @@
 # Changelog
 
-## [1.25.6](https://github.com/react-native-maps/react-native-maps/compare/v1.25.5...v1.25.6) (2025-08-31)
+## [1.25.7](https://github.com/react-native-maps/react-native-maps/compare/v1.25.6...v1.25.7) (2025-11-13)
 
+### Fixes
+
+* Upstream fixes related to android crashes brought down to older versions of react-native
+
+# Changelog
+
+## [1.25.6](https://github.com/react-native-maps/react-native-maps/compare/v1.25.5...v1.25.6) (2025-08-31)
 
 ### Reverts
 
