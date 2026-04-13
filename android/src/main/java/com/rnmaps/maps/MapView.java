@@ -1511,6 +1511,8 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
     int edgeBottomPadding;
 
     public void applyBaseMapPadding(int left, int top, int right, int bottom) {
+        if (map == null) return;
+
         if (super.getHeight() <= 0 || super.getWidth() <= 0) {
             // the map is not laid out yet and calling setPadding() now has no effect
             baseLeftMapPadding = left;
@@ -1575,6 +1577,7 @@ public class MapView extends com.google.android.gms.maps.MapView implements Goog
     }
 
     private void appendMapPadding(int iLeft, int iTop, int iRight, int iBottom) {
+        if (map == null) return;
         double density = getResources().getDisplayMetrics().density;
 
         edgeLeftPadding = (int) (iLeft * density);
